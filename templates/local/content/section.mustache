@@ -1,0 +1,468 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_simple/local/content/section
+
+    Single section layout for the Simple format.
+    Section 0 renders as a course banner with a flat activity list.
+    Other sections display content in three zones: learning content, related resources, and related activities.
+
+    Context variables required for this template:
+    * num - The section number.
+    * id - The section database ID.
+    * name - The section display name.
+    * isactive - Whether this is the currently active section.
+    * editing - Whether editing mode is on.
+    * issection0 - Whether this is section 0 (course info).
+    * courseshortname - The course short name (for section 0 banner).
+    * coursefullname - The course full name (for section 0 banner).
+    * hascourseimage - Whether the course has an uploaded image.
+    * courseimageurl - URL of the course image (for section 0 banner background).
+    * hassummary - Whether the section has a summary.
+    * summary - The section summary HTML.
+    * hasoutcomes - Whether the section has learning outcomes.
+    * outcomes - Array of outcome objects with text property.
+    * hasallcms - Whether section 0 has any activities (flat list).
+    * allcms - Array of all activity data for section 0.
+    * haslearningcontent - Whether there are learning content items.
+    * learningcontent - Array of learning content module data.
+    * hasresources - Whether there are resource items.
+    * resources - Array of resource module data.
+    * hasactivities - Whether there are activity items.
+    * activities - Array of activity module data.
+
+    @package    format_simple
+    @copyright  2025 South African Theological Seminary <ict@sats.ac.za>
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+
+<section id="simple-section-{{num}}"
+         class="simple-section {{#isactive}}is-active{{/isactive}} {{#issection0}}simple-section-info{{/issection0}}"
+         data-section="{{num}}"
+         data-sectionid="{{id}}"
+         data-for="section"
+         data-id="{{id}}"
+         data-number="{{num}}"
+         {{^isactive}}hidden{{/isactive}}
+         aria-labelledby="simple-section-title-{{num}}">
+
+    {{! ---- Section Header ---- }}
+    {{#showbanner}}
+    {{! Course Banner (section 0 with banner setting enabled) }}
+    <div class="simple-banner {{#hascourseimage}}has-image{{/hascourseimage}}"
+         {{#hascourseimage}}style="background-image: url('{{courseimageurl}}')"{{/hascourseimage}}>
+        <div class="simple-banner-overlay"></div>
+        <div class="simple-banner-content"
+             data-for="section_title"
+             data-id="{{id}}"
+             data-number="{{num}}">
+            <span class="simple-banner-code">{{courseshortname}}</span>
+            <h2 id="simple-section-title-{{num}}" class="simple-banner-title">
+                {{coursefullname}}
+            </h2>
+        </div>
+        {{#editing}}
+        <div class="simple-banner-actions">
+            {{#hassectioncontrolmenu}}
+            <div class="simple-section-controlmenu">
+                {{{sectioncontrolmenu}}}
+            </div>
+            {{/hassectioncontrolmenu}}
+        </div>
+        {{/editing}}
+    </div>
+    {{/showbanner}}
+
+    {{^showbanner}}
+    {{! Standard section header }}
+    <div class="simple-section-header"
+         data-for="section_title"
+         data-id="{{id}}"
+         data-number="{{num}}">
+        <h2 id="simple-section-title-{{num}}" class="simple-section-title">
+            {{name}}
+        </h2>
+
+        <div class="simple-section-actions">
+            {{! Outcomes popout button }}
+            {{#hasoutcomes}}
+            <button class="simple-outcomes-btn" type="button"
+                    data-action="toggle-outcomes"
+                    data-section="{{num}}"
+                    aria-expanded="false"
+                    aria-controls="simple-outcomes-panel-{{num}}">
+                <i class="fa fa-bullseye" aria-hidden="true"></i>
+                <span>{{str_outcomes}}</span>
+            </button>
+            {{/hasoutcomes}}
+
+            {{! Section editing controls }}
+            {{#editing}}
+            {{#hassectioncontrolmenu}}
+            <div class="simple-section-controlmenu">
+                {{{sectioncontrolmenu}}}
+            </div>
+            {{/hassectioncontrolmenu}}
+            {{/editing}}
+        </div>
+    </div>
+    {{/showbanner}}
+
+    {{! ---- Outcomes Popout Panel ---- }}
+    {{#hasoutcomes}}
+    <div id="simple-outcomes-panel-{{num}}"
+         class="simple-outcomes-panel"
+         role="region"
+         aria-label="{{str_outcomes}}"
+         hidden>
+        <div class="simple-outcomes-inner">
+            <h3 class="simple-outcomes-title">{{str_outcomes}}</h3>
+            <ul class="simple-outcomes-list">
+                {{#outcomes}}
+                <li class="simple-outcome-item">
+                    <i class="fa fa-circle-o simple-outcome-icon" aria-hidden="true"></i>
+                    <span>{{text}}</span>
+                </li>
+                {{/outcomes}}
+            </ul>
+        </div>
+    </div>
+    {{/hasoutcomes}}
+
+    {{! ---- Section Summary ---- }}
+    {{#hassummary}}
+    <div class="simple-section-summary">
+        {{{summary}}}
+    </div>
+    {{/hassummary}}
+
+    {{! ---- Restriction Notice ---- }}
+    {{#isrestricted}}
+    <div class="simple-restricted-notice" role="alert">
+        <i class="fa fa-lock" aria-hidden="true"></i>
+        <div class="simple-restricted-info">
+            {{{availabilityinfo}}}
+        </div>
+    </div>
+    {{/isrestricted}}
+
+    {{^isrestricted}}
+
+    {{! ============================================================ }}
+    {{! Section 0: Flat activity list (no zone categorization)       }}
+    {{! ============================================================ }}
+    {{#issection0}}
+    <div data-for="cmlist">
+        {{#hasallcms}}
+        {{#allcms}}
+        <div class="simple-cm-wrapper" id="module-{{id}}" data-for="cmitem" data-id="{{id}}">
+            <a href="{{url}}" class="simple-cm-card simple-cm-card-activity">
+                <img src="{{iconurl}}" alt="" class="simple-cm-icon" aria-hidden="true">
+                <span class="simple-cm-name">{{name}}</span>
+                {{#completionenabled}}
+                {{^ismanualcompletion}}
+                <span class="simple-cm-completion {{#iscomplete}}is-complete{{/iscomplete}}">
+                    {{#iscomplete}}
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                    {{^iscomplete}}
+                    <i class="fa fa-circle-o" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                </span>
+                {{/ismanualcompletion}}
+                {{#ismanualcompletion}}
+                <span class="simple-cm-manual-completion {{#iscomplete}}is-complete{{/iscomplete}}"
+                      role="checkbox"
+                      tabindex="0"
+                      aria-checked="{{#iscomplete}}true{{/iscomplete}}{{^iscomplete}}false{{/iscomplete}}"
+                      data-action="toggle-completion"
+                      data-cmid="{{id}}"
+                      title="{{#iscomplete}}Mark as not complete{{/iscomplete}}{{^iscomplete}}Mark as complete{{/iscomplete}}">
+                    {{#iscomplete}}
+                    <i class="fa fa-check-square" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                    {{^iscomplete}}
+                    <i class="fa fa-square-o" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                </span>
+                {{/ismanualcompletion}}
+                {{/completionenabled}}
+            </a>
+            {{#editing}}
+            {{#hascmcontrolmenu}}
+            <div class="simple-cm-edit">
+                {{{cmcontrolmenu}}}
+            </div>
+            {{/hascmcontrolmenu}}
+            {{/editing}}
+        </div>
+        {{/allcms}}
+        {{/hasallcms}}
+        {{^hasallcms}}
+        <div data-for="sectioninfo"></div>
+        {{/hasallcms}}
+    </div>
+    {{/issection0}}
+
+    {{! ============================================================ }}
+    {{! Sections 1+: Flat zone layout (DnD-compatible)               }}
+    {{! All cmitems are direct children of cmlist with data-zone     }}
+    {{! attributes. Zone headers are sibling dividers. JS regroups   }}
+    {{! items after DnD operations.                                  }}
+    {{! ============================================================ }}
+    {{^issection0}}
+    <div class="simple-cmlist" data-for="cmlist">
+        {{! Zone headers — data-orphan tells Moodle's _fixOrder to preserve them }}
+        <div class="simple-zone-header" data-zone-header="learning" data-orphan="true" {{^haslearningcontent}}hidden{{/haslearningcontent}}></div>
+
+        {{! Learning content items }}
+        {{#learningcontent}}
+        <div class="simple-cm simple-cm-learning {{#isprimary}}is-primary{{/isprimary}}"
+             id="module-{{id}}"
+             data-for="cmitem"
+             data-id="{{id}}"
+             data-zone="learning">
+
+            {{#isprimary}}
+                {{#hasinlinecontent}}
+                <div class="simple-inline-content">
+                    {{{inlinecontent}}}
+                </div>
+                {{/hasinlinecontent}}
+
+                {{#hasembedurl}}
+                <div class="simple-embed-container">
+                    <iframe src="{{embedurl}}"
+                            class="simple-embed-iframe"
+                            allowfullscreen
+                            loading="lazy"
+                            title="{{name}}"></iframe>
+                </div>
+                {{/hasembedurl}}
+
+                {{^hasinlinecontent}}
+                {{^hasembedurl}}
+                <a href="{{url}}" class="simple-cm-card simple-cm-card-primary">
+                    <img src="{{iconurl}}" alt="" class="simple-cm-icon" aria-hidden="true">
+                    <span class="simple-cm-name">{{name}}</span>
+                    {{#completionenabled}}
+                    {{^ismanualcompletion}}
+                    <span class="simple-cm-completion {{#iscomplete}}is-complete{{/iscomplete}}">
+                        {{#iscomplete}}
+                        <i class="fa fa-check-circle" aria-hidden="true"></i>
+                        {{/iscomplete}}
+                        {{^iscomplete}}
+                        <i class="fa fa-circle-o" aria-hidden="true"></i>
+                        {{/iscomplete}}
+                    </span>
+                    {{/ismanualcompletion}}
+                    {{#ismanualcompletion}}
+                    <span class="simple-cm-manual-completion {{#iscomplete}}is-complete{{/iscomplete}}"
+                          role="checkbox"
+                          tabindex="0"
+                          aria-checked="{{#iscomplete}}true{{/iscomplete}}{{^iscomplete}}false{{/iscomplete}}"
+                          data-action="toggle-completion"
+                          data-cmid="{{id}}"
+                          title="{{#iscomplete}}Mark as not complete{{/iscomplete}}{{^iscomplete}}Mark as complete{{/iscomplete}}">
+                        {{#iscomplete}}
+                        <i class="fa fa-check-square" aria-hidden="true"></i>
+                        {{/iscomplete}}
+                        {{^iscomplete}}
+                        <i class="fa fa-square-o" aria-hidden="true"></i>
+                        {{/iscomplete}}
+                    </span>
+                    {{/ismanualcompletion}}
+                    {{/completionenabled}}
+                </a>
+                {{/hasembedurl}}
+                {{/hasinlinecontent}}
+            {{/isprimary}}
+
+            {{^isprimary}}
+            <a href="{{url}}" class="simple-cm-card simple-cm-card-learning">
+                <img src="{{iconurl}}" alt="" class="simple-cm-icon" aria-hidden="true">
+                <span class="simple-cm-name">{{name}}</span>
+                {{#completionenabled}}
+                {{^ismanualcompletion}}
+                <span class="simple-cm-completion {{#iscomplete}}is-complete{{/iscomplete}}">
+                    {{#iscomplete}}
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                    {{^iscomplete}}
+                    <i class="fa fa-circle-o" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                </span>
+                {{/ismanualcompletion}}
+                {{#ismanualcompletion}}
+                <span class="simple-cm-manual-completion {{#iscomplete}}is-complete{{/iscomplete}}"
+                      role="checkbox"
+                      tabindex="0"
+                      aria-checked="{{#iscomplete}}true{{/iscomplete}}{{^iscomplete}}false{{/iscomplete}}"
+                      data-action="toggle-completion"
+                      data-cmid="{{id}}"
+                      title="{{#iscomplete}}Mark as not complete{{/iscomplete}}{{^iscomplete}}Mark as complete{{/iscomplete}}">
+                    {{#iscomplete}}
+                    <i class="fa fa-check-square" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                    {{^iscomplete}}
+                    <i class="fa fa-square-o" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                </span>
+                {{/ismanualcompletion}}
+                {{/completionenabled}}
+            </a>
+            {{/isprimary}}
+
+            {{#editing}}
+            {{#hascmcontrolmenu}}
+            <div class="simple-cm-edit">
+                {{{cmcontrolmenu}}}
+            </div>
+            {{/hascmcontrolmenu}}
+            {{/editing}}
+        </div>
+        {{/learningcontent}}
+
+        {{! Resources zone header }}
+        <div class="simple-zone-header" data-zone-header="resources" data-orphan="true" {{^hasresources}}hidden{{/hasresources}}>
+            <h3 class="simple-zone-title">{{str_resources}}</h3>
+        </div>
+
+        {{! Resource items }}
+        {{#resources}}
+        <div class="simple-cm-wrapper" id="module-{{id}}" data-for="cmitem" data-id="{{id}}" data-zone="resources">
+            <a href="{{url}}" class="simple-cm-card simple-cm-card-resource">
+                <span class="simple-resource-icon" aria-hidden="true">
+                    <i class="fa {{faicon}}"></i>
+                </span>
+                <span class="simple-cm-name">{{name}}</span>
+                {{#completionenabled}}
+                {{^ismanualcompletion}}
+                <span class="simple-cm-completion {{#iscomplete}}is-complete{{/iscomplete}}">
+                    {{#iscomplete}}
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                    {{^iscomplete}}
+                    <i class="fa fa-circle-o" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                </span>
+                {{/ismanualcompletion}}
+                {{#ismanualcompletion}}
+                <span class="simple-cm-manual-completion {{#iscomplete}}is-complete{{/iscomplete}}"
+                      role="checkbox"
+                      tabindex="0"
+                      aria-checked="{{#iscomplete}}true{{/iscomplete}}{{^iscomplete}}false{{/iscomplete}}"
+                      data-action="toggle-completion"
+                      data-cmid="{{id}}"
+                      title="{{#iscomplete}}Mark as not complete{{/iscomplete}}{{^iscomplete}}Mark as complete{{/iscomplete}}">
+                    {{#iscomplete}}
+                    <i class="fa fa-check-square" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                    {{^iscomplete}}
+                    <i class="fa fa-square-o" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                </span>
+                {{/ismanualcompletion}}
+                {{/completionenabled}}
+            </a>
+            {{#editing}}
+            {{#hascmcontrolmenu}}
+            <div class="simple-cm-edit">
+                {{{cmcontrolmenu}}}
+            </div>
+            {{/hascmcontrolmenu}}
+            {{/editing}}
+        </div>
+        {{/resources}}
+
+        {{! Activities zone header }}
+        <div class="simple-zone-header" data-zone-header="activities" data-orphan="true" {{^hasactivities}}hidden{{/hasactivities}}>
+            <h3 class="simple-zone-title">{{str_activities}}</h3>
+        </div>
+
+        {{! Activity items }}
+        {{#activities}}
+        <div class="simple-cm-wrapper" id="module-{{id}}" data-for="cmitem" data-id="{{id}}" data-zone="activities">
+            <a href="{{url}}" class="simple-cm-card simple-cm-card-activity">
+                <img src="{{iconurl}}" alt="" class="simple-cm-icon" aria-hidden="true">
+                <span class="simple-cm-name">{{name}}</span>
+                {{#completionenabled}}
+                {{^ismanualcompletion}}
+                <span class="simple-cm-completion {{#iscomplete}}is-complete{{/iscomplete}}">
+                    {{#iscomplete}}
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                    {{^iscomplete}}
+                    <i class="fa fa-circle-o" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                </span>
+                {{/ismanualcompletion}}
+                {{#ismanualcompletion}}
+                <span class="simple-cm-manual-completion {{#iscomplete}}is-complete{{/iscomplete}}"
+                      role="checkbox"
+                      tabindex="0"
+                      aria-checked="{{#iscomplete}}true{{/iscomplete}}{{^iscomplete}}false{{/iscomplete}}"
+                      data-action="toggle-completion"
+                      data-cmid="{{id}}"
+                      title="{{#iscomplete}}Mark as not complete{{/iscomplete}}{{^iscomplete}}Mark as complete{{/iscomplete}}">
+                    {{#iscomplete}}
+                    <i class="fa fa-check-square" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                    {{^iscomplete}}
+                    <i class="fa fa-square-o" aria-hidden="true"></i>
+                    {{/iscomplete}}
+                </span>
+                {{/ismanualcompletion}}
+                {{/completionenabled}}
+                {{#isrestricted}}
+                <span class="simple-cm-restricted" title="{{{availabilityinfo}}}">
+                    <i class="fa fa-lock" aria-hidden="true"></i>
+                </span>
+                {{/isrestricted}}
+            </a>
+            {{#editing}}
+            {{#hascmcontrolmenu}}
+            <div class="simple-cm-edit">
+                {{{cmcontrolmenu}}}
+            </div>
+            {{/hascmcontrolmenu}}
+            {{/editing}}
+        </div>
+        {{/activities}}
+
+        {{^haslearningcontent}}
+        {{^hasresources}}
+        {{^hasactivities}}
+        <div data-for="sectioninfo"></div>
+        {{/hasactivities}}
+        {{/hasresources}}
+        {{/haslearningcontent}}
+    </div>
+    {{/issection0}}
+
+    {{/isrestricted}}
+
+    {{! ---- Add Activity Button (editing mode) ---- }}
+    {{#editing}}
+    {{#hascmcontrols}}
+    <div class="simple-section-addactivity">
+        {{{cmcontrols}}}
+    </div>
+    {{/hascmcontrols}}
+    {{/editing}}
+
+</section>

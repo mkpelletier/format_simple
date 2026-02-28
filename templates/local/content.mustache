@@ -1,0 +1,170 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_simple/local/content
+
+    Main course content layout for the Simple format.
+    Renders a custom navigation panel on the left and section content on the right.
+
+    Context variables required for this template:
+    * courseid - The course ID.
+    * editing - Whether editing mode is on.
+    * hassections - Whether there are any visible sections.
+    * navitems - Array of navigation items for the sidebar.
+    * sections - Array of section content data.
+    * activesection - The currently active section number.
+
+    @package    format_simple
+    @copyright  2025 South African Theological Seminary <ict@sats.ac.za>
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+
+<div id="format-simple-root"
+     class="format-simple-wrapper"
+     data-courseid="{{courseid}}"
+     data-activesection="{{activesection}}">
+
+    {{#hassections}}
+    {{! ---- Navigation Panel ---- }}
+    <nav class="simple-nav" aria-label="{{str_selectunit}}" role="navigation">
+        <div class="simple-nav-inner">
+            {{#hassection0}}
+            {{#section0nav}}
+            <button class="simple-nav-item simple-nav-item-section0 {{#isactive}}is-active{{/isactive}}"
+                    data-section="0"
+                    data-sectionid="{{id}}"
+                    type="button"
+                    aria-current="{{#isactive}}true{{/isactive}}{{^isactive}}false{{/isactive}}"
+                    aria-label="{{name}}">
+                <span class="simple-nav-indicator simple-nav-indicator-info" aria-hidden="true">
+                    <i class="fa fa-book"></i>
+                </span>
+                <span class="simple-nav-label">{{name}}</span>
+                <span class="simple-nav-callout" aria-hidden="true"></span>
+            </button>
+            {{/section0nav}}
+            <div class="simple-nav-separator" aria-hidden="true"></div>
+            {{/hassection0}}
+            {{#navitems}}
+            <button class="simple-nav-item {{#isactive}}is-active{{/isactive}} {{#isrestricted}}is-restricted{{/isrestricted}}"
+                    data-section="{{num}}"
+                    data-sectionid="{{id}}"
+                    type="button"
+                    {{#isrestricted}}aria-disabled="true"{{/isrestricted}}
+                    aria-current="{{#isactive}}true{{/isactive}}{{^isactive}}false{{/isactive}}"
+                    aria-label="{{name}}">
+
+                {{! Progress indicator }}
+                <span class="simple-nav-indicator" aria-hidden="true">
+                    {{#isrestricted}}
+                    {{! Padlock icon }}
+                    <svg class="simple-progress-svg" viewBox="0 0 36 36" width="36" height="36">
+                        <circle class="simple-progress-bg" cx="18" cy="18" r="16"
+                                fill="none" stroke="#d1d5db" stroke-width="2.5"/>
+                        <text x="18" y="22" text-anchor="middle" class="simple-lock-icon">&#xf023;</text>
+                    </svg>
+                    {{/isrestricted}}
+
+                    {{^isrestricted}}
+                        {{#iscomplete}}
+                        {{! Green check circle }}
+                        <svg class="simple-progress-svg is-complete" viewBox="0 0 36 36" width="36" height="36">
+                            <circle cx="18" cy="18" r="16"
+                                    fill="#10b981" stroke="none"/>
+                            <polyline points="12,18 16,22 24,14"
+                                      fill="none" stroke="#ffffff" stroke-width="2.5"
+                                      stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        {{/iscomplete}}
+
+                        {{#isinprogress}}
+                        {{! Progress ring with percentage }}
+                        <svg class="simple-progress-svg is-inprogress" viewBox="0 0 36 36" width="36" height="36">
+                            <circle class="simple-progress-bg" cx="18" cy="18" r="16"
+                                    fill="none" stroke="#e5e7eb" stroke-width="2.5"/>
+                            <circle class="simple-progress-bar" cx="18" cy="18" r="16"
+                                    fill="none" stroke="#10b981" stroke-width="2.5"
+                                    stroke-linecap="round"
+                                    stroke-dasharray="{{circumference}}"
+                                    stroke-dashoffset="{{dashoffset}}"
+                                    transform="rotate(-90 18 18)"/>
+                            <text x="18" y="21" text-anchor="middle"
+                                  class="simple-progress-text">{{percentage}}%</text>
+                        </svg>
+                        {{/isinprogress}}
+
+                        {{#isnotstarted}}
+                        {{! Empty circle }}
+                        <svg class="simple-progress-svg is-notstarted" viewBox="0 0 36 36" width="36" height="36">
+                            <circle cx="18" cy="18" r="16"
+                                    fill="none" stroke="#d1d5db" stroke-width="2.5"/>
+                        </svg>
+                        {{/isnotstarted}}
+                    {{/isrestricted}}
+                </span>
+
+                {{! Section name }}
+                <span class="simple-nav-label">{{name}}</span>
+
+                {{! Callout arrow (visible when active) }}
+                <span class="simple-nav-callout" aria-hidden="true"></span>
+
+                {{! Restriction popover content (hidden, shown on hover) }}
+                {{#isrestricted}}
+                <div class="simple-restriction-popover" role="tooltip">
+                    {{{availabilityinfo}}}
+                </div>
+                {{/isrestricted}}
+            </button>
+            {{/navitems}}
+        </div>
+
+        {{#editing}}
+        {{#hasaddsection}}
+        <div class="simple-nav-addsection">
+            {{{addsectionhtml}}}
+        </div>
+        {{/hasaddsection}}
+        {{/editing}}
+    </nav>
+
+    {{! ---- Content Area ---- }}
+    <div class="simple-content" role="main">
+        <div data-for="course_sectionlist">
+            {{#sections}}
+                {{> format_simple/local/content/section }}
+            {{/sections}}
+        </div>
+    </div>
+    {{/hassections}}
+
+    {{^hassections}}
+    <div class="simple-empty">
+        <p>{{#str}}nocoursesections, format_simple{{/str}}</p>
+    </div>
+    {{/hassections}}
+</div>
+
+{{! Initialise the JavaScript modules. }}
+{{#js}}
+require(['core_courseformat/local/content'], function(component) {
+    component.init('#page', {}, {{sectionreturn}}, {{#pagesectionid}}{{.}}{{/pagesectionid}}{{^pagesectionid}}null{{/pagesectionid}});
+});
+require(['format_simple/simple'], function(Simple) {
+    Simple.init('format-simple-root');
+});
+{{/js}}

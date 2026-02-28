@@ -1,0 +1,1247 @@
+/**
+ * Styles for format_simple.
+ *
+ * All selectors are scoped under the .format-simple body class to prevent
+ * style leakage into other parts of the Moodle site. Moodle applies this
+ * body class automatically when this course format is active.
+ *
+ * @package    format_simple
+ * @copyright  2025 South African Theological Seminary <ict@sats.ac.za>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/* =========================================================================
+   Design Tokens
+   ========================================================================= */
+
+.format-simple .format-simple-wrapper {
+    --simple-bg: #eef2ff;
+    --simple-surface: #ffffff;
+    --simple-text: #1a1a1a;
+    --simple-text-secondary: #6b7280;
+    --simple-text-muted: #9ca3af;
+    --simple-border: #e5e7eb;
+    --simple-border-light: #f3f4f6;
+    --simple-accent: #2563eb;
+    --simple-accent-light: #dbeafe;
+    --simple-success: #10b981;
+    --simple-success-light: #d1fae5;
+    --simple-warning: #f59e0b;
+    --simple-danger: #ef4444;
+    --simple-radius: 12px;
+    --simple-radius-sm: 8px;
+    --simple-radius-lg: 16px;
+    --simple-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --simple-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.03);
+    --simple-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
+    --simple-transition: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+    --simple-transition-fast: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    --simple-transition-slow: 600ms cubic-bezier(0.4, 0, 0.2, 1);
+    --simple-nav-width: 280px;
+    --simple-nav-collapsed-width: 60px;
+    --simple-nav-collapse-speed: 1.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --simple-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* =========================================================================
+   Global Overrides — Hide Moodle Chrome for Clean Experience
+   ========================================================================= */
+
+
+/* Hide the course navigation breadcrumb — reveal on hover. */
+.format-simple #page-navbar {
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity var(--simple-transition), transform var(--simple-transition);
+    pointer-events: none;
+}
+
+.format-simple #page-navbar:hover,
+.format-simple #page-header:hover ~ #page-navbar,
+.format-simple.simple-topnav-visible #page-navbar {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Ensure hover zone extends to catch mouse movement. */
+.format-simple #page-navbar::before {
+    content: "";
+    display: block;
+    height: 24px;
+    position: absolute;
+    top: -24px;
+    left: 0;
+    right: 0;
+}
+
+/* Hide the course index drawer since we have our own nav. */
+.format-simple .courseindex {
+    display: none !important;
+}
+
+/* Tone down the page header when not needed. */
+.format-simple #page-content {
+    padding-top: 0;
+}
+
+/* Full-width layout — remove Moodle's default container padding. */
+.format-simple #topofscroll.main-inner {
+    padding: 0;
+    max-width: none;
+}
+
+.format-simple #page.drawers {
+    padding: 0;
+}
+
+.format-simple #page-content .region-main-box {
+    padding: 0;
+}
+
+.format-simple #region-main {
+    padding: 0;
+    border: none;
+    background: transparent;
+}
+
+.format-simple #page-content .region-main {
+    padding: 0;
+}
+
+.format-simple .course-content {
+    margin: 0;
+    padding: 0;
+    max-width: none;
+}
+
+/* Remove the page header excess spacing. */
+.format-simple #page-header {
+    max-width: none;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* Hide the LEFT drawer toggle (course index) — we have our own nav.
+   Keep the RIGHT drawer toggle (blocks) visible. */
+.format-simple .drawer-toggler.drawer-left-toggle {
+    display: none !important;
+}
+
+/* Style the right drawer toggle to match our design. */
+.format-simple .drawer-toggler.drawer-right-toggle .btn {
+    border-color: var(--simple-border);
+    color: var(--simple-text-secondary);
+    transition: all var(--simple-transition-fast);
+}
+
+.format-simple .drawer-toggler.drawer-right-toggle .btn:hover {
+    border-color: var(--simple-accent);
+    color: var(--simple-accent);
+    box-shadow: var(--simple-shadow);
+}
+
+/* ---- Right Drawer Smooth Animation ---- */
+
+.format-simple .drawer.drawer-right {
+    transition: right 600ms cubic-bezier(0.25, 0.1, 0.25, 1),
+                transform 600ms cubic-bezier(0.25, 0.1, 0.25, 1),
+                margin-right 600ms cubic-bezier(0.25, 0.1, 0.25, 1),
+                visibility 600ms cubic-bezier(0.25, 0.1, 0.25, 1),
+                box-shadow 600ms cubic-bezier(0.25, 0.1, 0.25, 1) !important;
+}
+
+.format-simple .drawer.drawer-right.show {
+    box-shadow: var(--simple-shadow-lg);
+}
+
+/* Drawer auto-close is handled by JS via Boost's own close button. */
+
+/* Ensure no max-width constraint on main content containers. */
+.format-simple .container-fluid,
+.format-simple #page-content .container-fluid {
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Override Boost theme's limited-width media query. */
+@media (min-width: 768px) {
+    .format-simple.pagelayout-standard #page.drawers .main-inner,
+    .format-simple.limitedwidth #page.drawers .main-inner,
+    .format-simple #page.drawers .main-inner {
+        max-width: 95vw;
+    }
+}
+
+/* =========================================================================
+   Layout — Navigation + Content
+   ========================================================================= */
+
+.format-simple .format-simple-wrapper {
+    position: relative;
+    display: flex;
+    min-height: calc(100vh - 60px);
+    background: linear-gradient(to bottom right, var(--simple-bg), var(--simple-surface));
+    font-family: var(--simple-font-sans);
+    gap: 0;
+    border-radius: var(--simple-radius-lg);
+}
+
+/* =========================================================================
+   Navigation Panel
+   ========================================================================= */
+
+.format-simple .simple-nav {
+    width: var(--simple-nav-width);
+    min-width: var(--simple-nav-width);
+    background: var(--simple-surface);
+    border-right: 1px solid var(--simple-border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    z-index: 10;
+    transition: width var(--simple-nav-collapse-speed),
+                min-width var(--simple-nav-collapse-speed);
+    border-top-left-radius: var(--simple-radius-lg);
+    border-bottom-left-radius: var(--simple-radius-lg);
+}
+
+.format-simple .simple-nav-inner {
+    padding: 24px 0;
+    flex: 1;
+}
+
+/* ---- Navigation Item ---- */
+
+.format-simple .simple-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--simple-text);
+    transition: background var(--simple-transition-fast),
+                color var(--simple-transition-fast);
+    position: relative;
+    min-height: 48px;
+    line-height: 1.3;
+}
+
+.format-simple .simple-nav-item:hover {
+    background: var(--simple-border-light);
+}
+
+.format-simple .simple-nav-item:focus-visible {
+    outline: 2px solid var(--simple-accent);
+    outline-offset: -2px;
+    border-radius: var(--simple-radius-sm);
+}
+
+/* Active state — seamless gradient band flowing into content. */
+.format-simple .simple-nav-item.is-active {
+    background: linear-gradient(to right, #dbeafe, var(--simple-bg));
+    color: var(--simple-accent);
+    font-weight: 600;
+    margin-right: -1px;
+    padding-right: 21px;
+    z-index: 12;
+    box-shadow:
+        inset 3px 0 0 var(--simple-accent),
+        0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+/* Speech-bubble inverse curves — concave corners above and below active tab. */
+.format-simple .simple-nav-item.is-active::before,
+.format-simple .simple-nav-item.is-active::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    width: var(--simple-radius-lg);
+    height: var(--simple-radius-lg);
+    pointer-events: none;
+    z-index: 11;
+}
+
+.format-simple .simple-nav-item.is-active::before {
+    bottom: 100%;
+    background: radial-gradient(
+        circle at 0% 0%,
+        var(--simple-surface) calc(var(--simple-radius-lg) - 0.5px),
+        var(--simple-bg) var(--simple-radius-lg)
+    );
+}
+
+.format-simple .simple-nav-item.is-active::after {
+    top: 100%;
+    background: radial-gradient(
+        circle at 0% 100%,
+        var(--simple-surface) calc(var(--simple-radius-lg) - 0.5px),
+        var(--simple-bg) var(--simple-radius-lg)
+    );
+}
+
+/* Legacy callout element — hidden, superseded by pseudo-element curves. */
+.format-simple .simple-nav-callout {
+    display: none !important;
+}
+
+/* ---- Section 0 / Course Info Nav Item ---- */
+
+.format-simple .simple-nav-item-section0 {
+    padding-top: 16px;
+    padding-bottom: 16px;
+}
+
+.format-simple .simple-nav-indicator-info {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--simple-accent-light);
+    color: var(--simple-accent);
+    font-size: 1rem;
+}
+
+.format-simple .simple-nav-item-section0.is-active .simple-nav-indicator-info {
+    background: var(--simple-accent);
+    color: #ffffff;
+}
+
+.format-simple .simple-nav-separator {
+    height: 1px;
+    background: var(--simple-border);
+    margin: 8px 20px;
+}
+
+/* Collapsed state for section 0 separator. */
+.format-simple .simple-nav.is-collapsed .simple-nav-separator {
+    margin: 8px 12px;
+}
+
+/* Restricted state. */
+.format-simple .simple-nav-item.is-restricted {
+    color: var(--simple-text-muted);
+    cursor: default;
+}
+
+.format-simple .simple-nav-item.is-restricted:hover {
+    background: var(--simple-border-light);
+}
+
+/* ---- Navigation Label ---- */
+
+.format-simple .simple-nav-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity var(--simple-nav-collapse-speed),
+                flex var(--simple-nav-collapse-speed);
+}
+
+/* ---- Progress Indicator SVGs ---- */
+
+.format-simple .simple-nav-indicator {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.format-simple .simple-progress-svg {
+    display: block;
+}
+
+.format-simple .simple-progress-text {
+    font-size: 8px;
+    font-weight: 700;
+    fill: var(--simple-text-secondary);
+    font-family: var(--simple-font-sans);
+}
+
+.format-simple .simple-progress-bar {
+    transition: stroke-dashoffset var(--simple-transition-slow);
+}
+
+.format-simple .simple-lock-icon {
+    font-family: "Font Awesome 6 Free", "FontAwesome";
+    font-weight: 900;
+    font-size: 12px;
+    fill: var(--simple-text-muted);
+}
+
+/* ---- Restriction Popover ---- */
+
+.format-simple .simple-restriction-popover {
+    display: none;
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--simple-surface);
+    border: 1px solid var(--simple-border);
+    border-radius: var(--simple-radius);
+    padding: 12px 16px;
+    box-shadow: var(--simple-shadow-lg);
+    z-index: 100;
+    min-width: 220px;
+    max-width: 320px;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--simple-text);
+    line-height: 1.5;
+    pointer-events: none;
+}
+
+.format-simple .simple-nav-item.is-restricted:hover .simple-restriction-popover,
+.format-simple .simple-nav-item.is-restricted:focus-within .simple-restriction-popover {
+    display: block;
+    animation: simpleFadeIn var(--simple-transition-fast) ease;
+}
+
+/* =========================================================================
+   Content Area
+   ========================================================================= */
+
+.format-simple .simple-content {
+    flex: 1;
+    min-width: 0;
+    padding: 32px 40px;
+    background: linear-gradient(to bottom right, var(--simple-bg), var(--simple-surface) 40%);
+    border-radius: 0 var(--simple-radius-lg) var(--simple-radius-lg) 0;
+    margin: 12px 12px 12px 0;
+    border: 1px solid rgba(37, 99, 235, 0.06);
+    border-left: none;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+/* ---- Section ---- */
+
+.format-simple .simple-section {
+    animation: simpleFadeIn var(--simple-transition) ease;
+}
+
+.format-simple .simple-section[hidden] {
+    display: none;
+}
+
+/* ---- Section Header ---- */
+
+.format-simple .simple-section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.format-simple .simple-section-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--simple-text);
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+/* ---- Section 0 — Course Banner ---- */
+
+.format-simple .simple-banner {
+    position: relative;
+    border-radius: var(--simple-radius-lg);
+    overflow: hidden;
+    margin-bottom: 32px;
+    min-height: 200px;
+    display: flex;
+    align-items: flex-end;
+    background: linear-gradient(135deg, var(--simple-accent) 0%, #1e40af 100%);
+}
+
+.format-simple .simple-banner.has-image {
+    min-height: 240px;
+    background-size: cover;
+    background-position: center;
+}
+
+.format-simple .simple-banner-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.65) 0%,
+        rgba(0, 0, 0, 0.15) 60%,
+        rgba(0, 0, 0, 0.05) 100%
+    );
+}
+
+.format-simple .simple-banner:not(.has-image) .simple-banner-overlay {
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.15) 0%,
+        rgba(0, 0, 0, 0) 100%
+    );
+}
+
+.format-simple .simple-banner-content {
+    position: relative;
+    z-index: 2;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.format-simple .simple-banner-code {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #ffffff;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.format-simple .simple-banner-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.format-simple .simple-banner-actions {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 3;
+}
+
+/* ---- Outcomes Button ---- */
+
+.format-simple .simple-outcomes-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: 1px solid var(--simple-border);
+    border-radius: var(--simple-radius-sm);
+    background: var(--simple-surface);
+    color: var(--simple-text-secondary);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--simple-transition-fast);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.format-simple .simple-outcomes-btn:hover {
+    border-color: var(--simple-accent);
+    color: var(--simple-accent);
+    box-shadow: var(--simple-shadow);
+}
+
+.format-simple .simple-outcomes-btn[aria-expanded="true"] {
+    background: var(--simple-accent-light);
+    border-color: var(--simple-accent);
+    color: var(--simple-accent);
+}
+
+/* ---- Outcomes Panel ---- */
+
+.format-simple .simple-outcomes-panel {
+    background: var(--simple-surface);
+    border: 1px solid var(--simple-border);
+    border-radius: var(--simple-radius);
+    box-shadow: var(--simple-shadow-md);
+    margin-bottom: 24px;
+    overflow: hidden;
+    animation: simpleSlideDown var(--simple-transition-fast) ease;
+}
+
+.format-simple .simple-outcomes-panel[hidden] {
+    display: none;
+}
+
+.format-simple .simple-outcomes-inner {
+    padding: 20px 24px;
+}
+
+.format-simple .simple-outcomes-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--simple-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 12px;
+}
+
+.format-simple .simple-outcomes-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.format-simple .simple-outcome-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 0.9375rem;
+    color: var(--simple-text);
+    line-height: 1.5;
+}
+
+.format-simple .simple-outcome-item + .simple-outcome-item {
+    border-top: 1px solid var(--simple-border-light);
+}
+
+.format-simple .simple-outcome-icon {
+    color: var(--simple-text-muted);
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+
+/* ---- Section Summary ---- */
+
+.format-simple .simple-section-summary {
+    color: var(--simple-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    margin-bottom: 32px;
+    margin-left: 24px;
+    max-width: 720px;
+    text-align: justify;
+}
+
+.format-simple .simple-section-summary p,
+.format-simple .simple-section-summary div,
+.format-simple .simple-section-summary li {
+    text-align: justify;
+}
+
+/* ---- Restriction Notice ---- */
+
+.format-simple .simple-restricted-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 20px 24px;
+    background: var(--simple-border-light);
+    border-radius: var(--simple-radius);
+    color: var(--simple-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+}
+
+.format-simple .simple-restricted-notice .fa-lock {
+    font-size: 1.25rem;
+    color: var(--simple-text-muted);
+    margin-top: 2px;
+}
+
+/* =========================================================================
+   Content Zones (flat layout for DnD compatibility)
+   ========================================================================= */
+
+/* The cmlist is a flat container — all cmitems and zone headers are siblings. */
+.format-simple .simple-cmlist {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Zone headers act as section dividers within the flat list. */
+.format-simple .simple-zone-header {
+    margin-top: 24px;
+}
+
+.format-simple .simple-zone-header:first-child,
+.format-simple .simple-zone-header[data-zone-header="learning"] {
+    margin-top: 0;
+}
+
+.format-simple .simple-zone-header[hidden] {
+    display: none;
+}
+
+.format-simple .simple-zone-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--simple-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--simple-border-light);
+}
+
+/* Section 0 flat activity list — same spacing as zone items. */
+.format-simple .simple-section-info [data-for="cmlist"] {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* =========================================================================
+   Learning Content Zone
+   ========================================================================= */
+
+/* Inline page content. */
+.format-simple .simple-inline-content {
+    background: var(--simple-surface);
+    border-radius: var(--simple-radius);
+    padding: 32px;
+    box-shadow: var(--simple-shadow);
+    line-height: 1.8;
+    font-size: 1rem;
+    color: var(--simple-text);
+    margin-bottom: 24px;
+    text-align: justify;
+}
+
+.format-simple .simple-inline-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--simple-radius-sm);
+}
+
+.format-simple .simple-inline-content h1,
+.format-simple .simple-inline-content h2,
+.format-simple .simple-inline-content h3,
+.format-simple .simple-inline-content h4 {
+    color: var(--simple-text);
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.3;
+}
+
+.format-simple .simple-inline-content p {
+    margin-bottom: 1em;
+}
+
+/* Embed container (video). */
+.format-simple .simple-embed-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    background: #000;
+    border-radius: var(--simple-radius);
+    overflow: hidden;
+    box-shadow: var(--simple-shadow-md);
+    margin-bottom: 24px;
+}
+
+.format-simple .simple-embed-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* =========================================================================
+   Course Module Cards
+   ========================================================================= */
+
+.format-simple .simple-cm-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--simple-surface);
+    border: 1px solid var(--simple-border);
+    border-radius: var(--simple-radius-sm);
+    text-decoration: none;
+    color: var(--simple-text);
+    transition: all var(--simple-transition-fast);
+    min-height: 48px;
+    cursor: pointer;
+}
+
+.format-simple .simple-cm-card:hover {
+    border-color: var(--simple-accent);
+    box-shadow: var(--simple-shadow-md);
+    transform: translateY(-1px);
+    color: var(--simple-text);
+    text-decoration: none;
+}
+
+.format-simple .simple-cm-card:active {
+    transform: translateY(0);
+    box-shadow: var(--simple-shadow);
+}
+
+/* Primary learning content card — larger and more prominent. */
+.format-simple .simple-cm-card.simple-cm-card-primary {
+    padding: 24px;
+    border-radius: var(--simple-radius);
+    box-shadow: var(--simple-shadow);
+    font-size: 1.0625rem;
+    font-weight: 600;
+}
+
+.format-simple .simple-cm-card.simple-cm-card-primary .simple-cm-icon {
+    width: 32px;
+    height: 32px;
+}
+
+/* ---- Module Icon ---- */
+
+.format-simple .simple-cm-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+/* ---- Resource Icon (Font Awesome) ---- */
+
+.format-simple .simple-resource-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--simple-radius-sm);
+    background: var(--simple-border-light);
+    color: var(--simple-text-secondary);
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+/* ---- Module Name ---- */
+
+.format-simple .simple-cm-name {
+    flex: 1;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+/* ---- Completion Indicator (auto) ---- */
+
+.format-simple .simple-cm-completion {
+    flex-shrink: 0;
+    font-size: 1rem;
+    color: var(--simple-text-muted);
+    transition: color var(--simple-transition-slow);
+}
+
+.format-simple .simple-cm-completion.is-complete {
+    color: var(--simple-success);
+}
+
+/* ---- Manual Completion Checkbox ---- */
+
+.format-simple .simple-cm-manual-completion {
+    flex-shrink: 0;
+    font-size: 1rem;
+    color: var(--simple-accent);
+    cursor: pointer;
+    transition: color var(--simple-transition-fast),
+                transform var(--simple-transition-fast);
+}
+
+.format-simple .simple-cm-manual-completion:hover {
+    transform: scale(1.15);
+}
+
+.format-simple .simple-cm-manual-completion.is-complete {
+    color: var(--simple-success);
+}
+
+/* ---- Restricted Indicator ---- */
+
+.format-simple .simple-cm-restricted {
+    flex-shrink: 0;
+    color: var(--simple-text-muted);
+    font-size: 0.875rem;
+}
+
+/* =========================================================================
+   Empty State
+   ========================================================================= */
+
+.format-simple .simple-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    color: var(--simple-text-muted);
+    font-size: 1rem;
+}
+
+/* =========================================================================
+   Collapsed Navigation State
+   ========================================================================= */
+
+/* Collapsed dimensions. */
+.format-simple .simple-nav.is-collapsed {
+    width: var(--simple-nav-collapsed-width);
+    min-width: var(--simple-nav-collapsed-width);
+    overflow: hidden;
+}
+
+/* Hide labels when collapsed. */
+.format-simple .simple-nav.is-collapsed .simple-nav-label {
+    opacity: 0;
+    flex: 0 0 0;
+}
+
+/* Center progress indicators when collapsed. */
+.format-simple .simple-nav.is-collapsed .simple-nav-item {
+    justify-content: center;
+    padding-left: 12px;
+    padding-right: 12px;
+    gap: 0;
+}
+
+/* Simplify active state when collapsed — match wrapper bg for seamless blend. */
+.format-simple .simple-nav.is-collapsed .simple-nav-item.is-active {
+    margin-right: 0;
+    padding-right: 12px;
+    background: var(--simple-bg);
+}
+
+/* Hide the speech-bubble curves when collapsed. */
+.format-simple .simple-nav.is-collapsed .simple-nav-item.is-active::before,
+.format-simple .simple-nav.is-collapsed .simple-nav-item.is-active::after {
+    display: none;
+}
+
+/* Hide editing controls when collapsed. */
+.format-simple .simple-nav.is-collapsed .simple-nav-addsection {
+    display: none;
+}
+
+/* =========================================================================
+   Animations
+   ========================================================================= */
+
+@keyframes simpleFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes simpleSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================================================
+   Editing Mode Adjustments
+   ========================================================================= */
+
+.format-simple.editing .simple-nav-item.is-restricted {
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+/* Show edit controls on hover. */
+.format-simple .simple-section .editingactions {
+    opacity: 0;
+    transition: opacity var(--simple-transition-fast);
+}
+
+.format-simple .simple-section:hover .editingactions,
+.format-simple.editing .simple-section .editingactions {
+    opacity: 1;
+}
+
+/* ---- Section Header Actions ---- */
+
+.format-simple .simple-section-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.format-simple .simple-section-controlmenu {
+    display: inline-flex;
+}
+
+/* ---- Activity Control Menus ---- */
+
+.format-simple .simple-cm-wrapper {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+
+.format-simple .simple-cm-wrapper .simple-cm-card {
+    flex: 1;
+}
+
+.format-simple .simple-cm-edit {
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    transition: opacity var(--simple-transition-fast);
+    padding: 0 4px;
+}
+
+.format-simple .simple-cm-wrapper:hover .simple-cm-edit,
+.format-simple.editing .simple-cm-wrapper .simple-cm-edit {
+    opacity: 1;
+}
+
+/* Learning content items need positioning context for the edit button. */
+.format-simple .simple-cm-learning {
+    position: relative;
+}
+
+/* Learning content zone edit button (positioned top-right). */
+.format-simple .simple-cm-learning .simple-cm-edit {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    opacity: 0;
+    z-index: 5;
+}
+
+.format-simple .simple-cm-learning:hover .simple-cm-edit,
+.format-simple.editing .simple-cm-learning .simple-cm-edit {
+    opacity: 1;
+}
+
+/* Ensure action menu dropdowns stay near their trigger. */
+.format-simple .simple-cm-edit .action-menu,
+.format-simple .simple-section-controlmenu .action-menu,
+.format-simple .simple-banner-actions .action-menu {
+    position: relative;
+}
+
+.format-simple .simple-cm-edit .dropdown-menu,
+.format-simple .simple-section-controlmenu .dropdown-menu,
+.format-simple .simple-banner-actions .dropdown-menu {
+    z-index: 1050;
+}
+
+/* ---- Add Activity Button ---- */
+
+.format-simple .simple-section-addactivity {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--simple-border);
+}
+
+/* ---- Add Section Button in Nav ---- */
+
+.format-simple .simple-nav-addsection {
+    padding: 16px 20px;
+    border-top: 1px solid var(--simple-border);
+}
+
+/* =========================================================================
+   Mobile Header Bar (hamburger + course title)
+   ========================================================================= */
+
+.format-simple .simple-mobile-header {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: var(--simple-surface);
+    border-bottom: 1px solid var(--simple-border);
+    border-radius: var(--simple-radius-lg) var(--simple-radius-lg) 0 0;
+}
+
+.format-simple .simple-mobile-nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border: 1px solid var(--simple-border);
+    border-radius: var(--simple-radius-sm);
+    background: var(--simple-surface);
+    color: var(--simple-text);
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: all var(--simple-transition-fast);
+}
+
+.format-simple .simple-mobile-nav-toggle:hover {
+    border-color: var(--simple-accent);
+    color: var(--simple-accent);
+    box-shadow: var(--simple-shadow);
+}
+
+.format-simple .simple-mobile-course-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--simple-text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
+}
+
+/* =========================================================================
+   Responsive — Tablet
+   ========================================================================= */
+
+@media (max-width: 1024px) {
+    /* Hide redundant page heading — course title is in the mobile header bar. */
+    .format-simple .page-header-headings {
+        display: none;
+    }
+
+    .format-simple .simple-mobile-header {
+        display: flex;
+    }
+
+    .format-simple .format-simple-wrapper {
+        flex-direction: column;
+    }
+
+    .format-simple .simple-nav {
+        width: 100%;
+        min-width: 100%;
+        height: auto;
+        position: relative;
+        top: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--simple-border);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height var(--simple-transition);
+    }
+
+    .format-simple .simple-nav.is-open {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .format-simple .simple-nav-inner {
+        padding: 12px 0;
+    }
+
+    .format-simple .simple-nav-item {
+        padding: 12px 20px;
+    }
+
+    .format-simple .simple-nav-item.is-active::before,
+    .format-simple .simple-nav-item.is-active::after {
+        display: none;
+    }
+
+    /* Disable collapse on tablet/mobile — nav uses drawer pattern instead. */
+    .format-simple .simple-nav.is-collapsed {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .format-simple .simple-nav.is-collapsed .simple-nav-label {
+        opacity: 1;
+        flex: 1;
+    }
+
+    .format-simple .simple-nav.is-collapsed .simple-nav-item {
+        justify-content: flex-start;
+        padding-left: 20px;
+        padding-right: 20px;
+        gap: 12px;
+    }
+
+    .format-simple .simple-content {
+        padding: 24px 20px;
+        max-width: 100%;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .format-simple .simple-restriction-popover {
+        left: 16px;
+        right: 16px;
+        top: 100%;
+        transform: none;
+        min-width: auto;
+    }
+}
+
+/* =========================================================================
+   Responsive — Mobile
+   ========================================================================= */
+
+@media (max-width: 768px) {
+    .format-simple .simple-section-title {
+        font-size: 1.375rem;
+    }
+
+    .format-simple .simple-section-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .format-simple .simple-banner {
+        min-height: 160px;
+    }
+
+    .format-simple .simple-banner.has-image {
+        min-height: 180px;
+    }
+
+    .format-simple .simple-banner-content {
+        padding: 24px 20px;
+    }
+
+    .format-simple .simple-banner-title {
+        font-size: 1.375rem;
+    }
+
+    .format-simple .simple-inline-content {
+        padding: 20px;
+        border-radius: var(--simple-radius-sm);
+    }
+
+    .format-simple .simple-cm-card {
+        padding: 12px 14px;
+    }
+
+    .format-simple .simple-outcomes-inner {
+        padding: 16px 18px;
+    }
+
+    .format-simple .simple-content {
+        padding: 16px 12px;
+    }
+}
