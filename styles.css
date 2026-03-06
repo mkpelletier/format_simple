@@ -201,6 +201,13 @@
     box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
 }
 
+.format-simple .simple-cog-tile-img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    border-radius: 3px;
+}
+
 /* Hide the course navigation breadcrumb — reveal on hover. */
 .format-simple #page-navbar {
     opacity: 0;

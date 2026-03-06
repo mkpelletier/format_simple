@@ -92,7 +92,20 @@ define([], function() {
         'download': 'fa-download',
         'upload': 'fa-upload',
         'url': 'fa-link',
-        'dashboard': 'fa-link'
+        'dashboard': 'fa-link',
+        'usage': 'fa-chart-area',
+        'statistics': 'fa-chart-area',
+        'reminder': 'fa-user-clock',
+        'reminders': 'fa-user-clock',
+        'lti': 'fa-external-link-alt',
+        'external tool': 'fa-external-link-alt',
+        'recycle bin': 'fa-trash',
+        'unified grader': 'img:/local/unifiedgrader/pix/icon.png',
+        'submission': 'fa-list-alt',
+        'submissions': 'fa-list-alt',
+        'override': 'fa-redo-alt',
+        'overrides': 'fa-redo-alt',
+        'freeze': 'fa-ban'
     };
 
     /** @type {string} Default icon when no match is found. */
@@ -233,7 +246,14 @@ define([], function() {
 
             var iconWrap = document.createElement('span');
             iconWrap.className = 'simple-cog-tile-icon';
-            iconWrap.innerHTML = '<i class="fa ' + item.icon + '" aria-hidden="true"></i>';
+            if (item.icon.indexOf('img:') === 0) {
+                var imgPath = item.icon.substring(4);
+                var wwwroot = (window.M && M.cfg && M.cfg.wwwroot) || '';
+                iconWrap.innerHTML = '<img src="' + wwwroot + imgPath + '" alt="" width="20" height="20"'
+                    + ' class="simple-cog-tile-img">';
+            } else {
+                iconWrap.innerHTML = '<i class="fa ' + item.icon + '" aria-hidden="true"></i>';
+            }
 
             var label = document.createElement('span');
             label.textContent = item.text;

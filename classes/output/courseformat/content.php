@@ -144,7 +144,7 @@ class content extends content_base {
             }
 
             // Build navigation item.
-            $navitem = $this->build_nav_item($section, $course, $format);
+            $navitem = $this->build_nav_item($section, $course, $format, $output);
             $data->navitems[] = $navitem;
 
             // Build section content using the section output class.
@@ -206,7 +206,8 @@ class content extends content_base {
     private function build_nav_item(
         \section_info $section,
         stdClass $course,
-        \core_courseformat\base $format
+        \core_courseformat\base $format,
+        renderer_base $output
     ): stdClass {
         $navitem = new stdClass();
         $navitem->num = (int) $section->section;
@@ -218,7 +219,11 @@ class content extends content_base {
         $navitem->isrestricted = !$section->uservisible && $section->visible;
         $navitem->availabilityinfo = '';
         if ($navitem->isrestricted && !empty($section->availableinfo)) {
-            $navitem->availabilityinfo = $section->availableinfo;
+            $navitem->availabilityinfo = $this->render_availability_info(
+                $section->availableinfo,
+                $output,
+                $course
+            );
         }
 
         // Completion progress.
@@ -235,5 +240,27 @@ class content extends content_base {
         $navitem->dashoffset = $circumference - ($circumference * $progress->percentage / 100);
 
         return $navitem;
+    }
+
+    /**
+     * Render availability info that may be a string or a renderable object.
+     *
+     * In Moodle 5.0+ the availableinfo property can be a
+     * core_availability_multiple_messages renderable rather than a plain string.
+     *
+     * @param string|object $info The availability info (string or renderable).
+     * @param renderer_base $output The renderer.
+     * @param stdClass $course The course object.
+     * @return string Rendered HTML.
+     */
+    private function render_availability_info($info, renderer_base $output, stdClass $course): string {
+        if (is_string($info)) {
+            return \core_availability\info::format_info($info, $course);
+        }
+
+        $renderable = new \core_availability\output\availability_info($info);
+        $templatedata = $renderable->export_for_template($output);
+        $text = $output->render_from_template('core_availability/availability_info', $templatedata);
+        return \core_availability\info::format_info($text, $course);
     }
 }

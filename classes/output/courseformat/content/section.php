@@ -186,7 +186,7 @@ class section extends section_base {
         $data->isrestricted = !$section->uservisible && $section->visible;
         $data->availabilityinfo = '';
         if ($data->isrestricted && !empty($section->availableinfo)) {
-            $data->availabilityinfo = $section->availableinfo;
+            $data->availabilityinfo = $this->render_availability_info($section->availableinfo, $output);
         }
 
         // Strings for template.
@@ -238,8 +238,10 @@ class section extends section_base {
         // Availability restrictions.
         $cmdata->isrestricted = !$cm->uservisible && $cm->visible;
         $cmdata->availabilityinfo = '';
+        $cmdata->availabilitytext = '';
         if ($cmdata->isrestricted && !empty($cm->availableinfo)) {
-            $cmdata->availabilityinfo = $cm->availableinfo;
+            $cmdata->availabilityinfo = $this->render_availability_info($cm->availableinfo, $output);
+            $cmdata->availabilitytext = strip_tags($cmdata->availabilityinfo);
         }
 
         // Zone-specific data.
@@ -518,5 +520,25 @@ class section extends section_base {
         }
 
         return $outcomes;
+    }
+
+    /**
+     * Render availability info to an HTML string.
+     *
+     * Handles both plain strings and core_availability_multiple_messages renderables.
+     *
+     * @param string|\core_availability_multiple_messages $info The availability info.
+     * @param renderer_base $output The renderer.
+     * @return string Rendered HTML.
+     */
+    private function render_availability_info($info, renderer_base $output): string {
+        if (is_string($info)) {
+            return \core_availability\info::format_info($info, $this->format->get_course());
+        }
+
+        $renderable = new \core_availability\output\availability_info($info);
+        $templatedata = $renderable->export_for_template($output);
+        $text = $output->render_from_template('core_availability/availability_info', $templatedata);
+        return \core_availability\info::format_info($text, $this->format->get_course());
     }
 }
