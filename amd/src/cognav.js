@@ -227,106 +227,111 @@ define([], function() {
      * @param {string} courseUrl The course home URL.
      */
     var setup = function(courseUrl) {
-        var secnav = document.querySelector('.format-simple .secondary-navigation');
-        if (!secnav) {
+        // Ensure the .format-simple body class is present.
+        if (!document.body.classList.contains('format-simple')) {
             return;
         }
 
-        var items = extractNavItems(secnav);
-        if (!items.length) {
-            return;
-        }
-
-        // Build the cog container.
+        // Build the cog container — always created so the home button has a parent.
         var container = document.createElement('div');
         container.className = 'simple-cog-container';
 
-        var btn = document.createElement('button');
-        btn.className = 'simple-cog-btn';
-        btn.type = 'button';
-        btn.setAttribute('aria-label', 'Course tools');
-        btn.setAttribute('aria-expanded', 'false');
-        btn.innerHTML = '<i class="fa fa-cog" aria-hidden="true"></i>';
+        // Try to build the cog popover from secondary navigation.
+        var secnav = document.querySelector('.secondary-navigation');
+        var items = secnav ? extractNavItems(secnav) : [];
 
-        var popover = document.createElement('div');
-        popover.className = 'simple-cog-popover';
-        popover.setAttribute('role', 'menu');
+        if (items.length) {
+            var btn = document.createElement('button');
+            btn.className = 'simple-cog-btn';
+            btn.type = 'button';
+            btn.setAttribute('aria-label', 'Course tools');
+            btn.setAttribute('aria-expanded', 'false');
+            btn.innerHTML = '<i class="fa fa-cog" aria-hidden="true"></i>';
 
-        var heading = document.createElement('div');
-        heading.className = 'simple-cog-heading';
-        heading.textContent = 'Course Tools';
-        popover.appendChild(heading);
+            var popover = document.createElement('div');
+            popover.className = 'simple-cog-popover';
+            popover.setAttribute('role', 'menu');
 
-        var grid = document.createElement('div');
-        grid.className = 'simple-cog-grid';
+            var heading = document.createElement('div');
+            heading.className = 'simple-cog-heading';
+            heading.textContent = 'Course Tools';
+            popover.appendChild(heading);
 
-        items.forEach(function(item) {
-            var tile = document.createElement('a');
-            tile.className = 'simple-cog-tile';
-            tile.href = item.url;
-            tile.setAttribute('role', 'menuitem');
-            if (item.active) {
-                tile.classList.add('is-active');
-            }
+            var grid = document.createElement('div');
+            grid.className = 'simple-cog-grid';
 
-            var iconWrap = document.createElement('span');
-            iconWrap.className = 'simple-cog-tile-icon';
-            if (item.icon.indexOf('img:') === 0) {
-                var imgPath = item.icon.substring(4);
-                var wwwroot = (window.M && M.cfg && M.cfg.wwwroot) || '';
-                iconWrap.innerHTML = '<img src="' + wwwroot + imgPath + '" alt="" width="20" height="20"'
-                    + ' class="simple-cog-tile-img">';
-            } else {
-                iconWrap.innerHTML = '<i class="fa ' + item.icon + '" aria-hidden="true"></i>';
-            }
+            items.forEach(function(item) {
+                var tile = document.createElement('a');
+                tile.className = 'simple-cog-tile';
+                tile.href = item.url;
+                tile.setAttribute('role', 'menuitem');
+                if (item.active) {
+                    tile.classList.add('is-active');
+                }
 
-            var label = document.createElement('span');
-            label.textContent = item.text;
+                var iconWrap = document.createElement('span');
+                iconWrap.className = 'simple-cog-tile-icon';
+                if (item.icon.indexOf('img:') === 0) {
+                    var imgPath = item.icon.substring(4);
+                    var wwwroot = (window.M && M.cfg && M.cfg.wwwroot) || '';
+                    iconWrap.innerHTML = '<img src="' + wwwroot + imgPath + '" alt="" width="20" height="20"'
+                        + ' class="simple-cog-tile-img">';
+                } else {
+                    iconWrap.innerHTML = '<i class="fa ' + item.icon + '" aria-hidden="true"></i>';
+                }
 
-            tile.appendChild(iconWrap);
-            tile.appendChild(label);
-            grid.appendChild(tile);
-        });
+                var label = document.createElement('span');
+                label.textContent = item.text;
 
-        popover.appendChild(grid);
-        container.appendChild(btn);
-        container.appendChild(popover);
-        document.body.appendChild(container);
+                tile.appendChild(iconWrap);
+                tile.appendChild(label);
+                grid.appendChild(tile);
+            });
 
-        // Add the home button for navigating back to the course.
+            popover.appendChild(grid);
+            container.appendChild(btn);
+            container.appendChild(popover);
+
+            // Click toggle.
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var open = popover.classList.toggle('is-open');
+                btn.classList.toggle('is-open', open);
+                btn.setAttribute('aria-expanded', open);
+            });
+
+            // Close on click outside.
+            document.addEventListener('click', function(e) {
+                if (!container.contains(e.target)) {
+                    popover.classList.remove('is-open');
+                    btn.classList.remove('is-open');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // Close on Escape.
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && popover.classList.contains('is-open')) {
+                    popover.classList.remove('is-open');
+                    btn.classList.remove('is-open');
+                    btn.setAttribute('aria-expanded', 'false');
+                    btn.focus();
+                }
+            });
+
+            // Hide the original secondary navigation.
+            secnav.style.display = 'none';
+        }
+
+        // Add the home button — independent of whether the cog was created.
         if (courseUrl) {
             addHomeButton(container, courseUrl);
         }
 
-        // Hide the original secondary navigation.
-        secnav.style.display = 'none';
-
-        // Click toggle.
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            var open = popover.classList.toggle('is-open');
-            btn.classList.toggle('is-open', open);
-            btn.setAttribute('aria-expanded', open);
-        });
-
-        // Close on click outside.
-        document.addEventListener('click', function(e) {
-            if (!container.contains(e.target)) {
-                popover.classList.remove('is-open');
-                btn.classList.remove('is-open');
-                btn.setAttribute('aria-expanded', 'false');
-            }
-        });
-
-        // Close on Escape.
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && popover.classList.contains('is-open')) {
-                popover.classList.remove('is-open');
-                btn.classList.remove('is-open');
-                btn.setAttribute('aria-expanded', 'false');
-                btn.focus();
-            }
-        });
+        // Only append the container if it has children (cog and/or home button).
+        if (container.children.length) {
+            document.body.appendChild(container);
+        }
     };
 
     return {

@@ -176,7 +176,7 @@
             </div>
             {{/hasinlinecontent}}
             {{^hasinlinecontent}}
-            <a href="{{url}}" class="simple-cm-card simple-cm-card-activity">
+            <a href="{{url}}" class="aalink simple-cm-card simple-cm-card-activity">
                 <img src="{{iconurl}}" alt="" class="simple-cm-icon" aria-hidden="true">
                 <span class="simple-cm-name">{{name}}</span>
                 {{#completionenabled}}
@@ -273,7 +273,7 @@
 
                 {{^hasinlinecontent}}
                 {{^hasembedurl}}
-                <a href="{{url}}" class="simple-cm-card simple-cm-card-primary">
+                <a href="{{url}}" class="aalink simple-cm-card simple-cm-card-primary">
                     <img src="{{iconurl}}" alt="" class="simple-cm-icon" aria-hidden="true">
                     <span class="simple-cm-name">{{name}}</span>
                     {{#completionenabled}}
@@ -310,7 +310,7 @@
             {{/isprimary}}
 
             {{^isprimary}}
-            <a href="{{url}}" class="simple-cm-card simple-cm-card-learning">
+            <a href="{{url}}" class="aalink simple-cm-card simple-cm-card-learning">
                 <img src="{{iconurl}}" alt="" class="simple-cm-icon" aria-hidden="true">
                 <span class="simple-cm-name">{{name}}</span>
                 {{#completionenabled}}
@@ -362,7 +362,7 @@
         {{! Resource items }}
         {{#resources}}
         <div class="simple-cm-wrapper {{#ishidden}}is-dimmed{{/ishidden}} {{#isstealth}}is-dimmed is-stealth{{/isstealth}}" id="module-{{id}}" data-for="cmitem" data-id="{{id}}" data-zone="resources">
-            <a href="{{url}}" class="simple-cm-card simple-cm-card-resource">
+            <a href="{{url}}" class="aalink simple-cm-card simple-cm-card-resource">
                 <span class="simple-resource-icon" aria-hidden="true">
                     <i class="fa {{faicon}}"></i>
                 </span>
@@ -414,7 +414,7 @@
         {{! Activity items }}
         {{#activities}}
         <div class="simple-cm-wrapper {{#ishidden}}is-dimmed{{/ishidden}} {{#isstealth}}is-dimmed is-stealth{{/isstealth}}" id="module-{{id}}" data-for="cmitem" data-id="{{id}}" data-zone="activities">
-            <a href="{{url}}" class="simple-cm-card simple-cm-card-activity">
+            <a href="{{url}}" class="aalink simple-cm-card simple-cm-card-activity">
                 <img src="{{iconurl}}" alt="" class="simple-cm-icon" aria-hidden="true">
                 <span class="simple-cm-name">{{name}}</span>
                 {{#completionenabled}}

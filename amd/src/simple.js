@@ -80,6 +80,9 @@ define(['core/ajax'], function(Ajax) {
         // Subpanel tolerance applies globally (editing and view mode).
         setupSubpanelTolerance();
 
+        // Detect modules that inject inline content via JS (e.g. mod_syllabus).
+        setupInlineContentDetection();
+
         if (isEditing) {
             // Editing mode: all sections visible, nav scrolls to sections.
             setupEditingNavigation();
@@ -1131,6 +1134,58 @@ define(['core/ajax'], function(Ajax) {
             content.addEventListener('mouseenter', cleanup);
             menuItem.addEventListener('mouseenter', cleanup);
         }, true); // Capture phase — fires BEFORE Moodle's bubble-phase handler.
+    };
+
+    /**
+     * Hide activity cards in section 0 when a module injects inline content.
+     *
+     * Some modules (e.g. mod_syllabus with inline display) append their
+     * rendered content to the cmitem wrapper via JavaScript after page load.
+     * Since this happens outside our Mustache template, the card link is
+     * already present. A MutationObserver detects when new children are
+     * added to a cmitem and hides the card to prevent overlap.
+     */
+    const setupInlineContentDetection = function() {
+        var section0 = root.querySelector('#simple-section-0');
+        if (!section0) {
+            return;
+        }
+
+        var cmitems = section0.querySelectorAll('[data-for="cmitem"]');
+        cmitems.forEach(function(cmitem) {
+            // If already has extra content beyond the card and edit controls, hide the card now.
+            hideCardIfInlineContent(cmitem);
+
+            // Watch for future DOM additions (modules that load content async).
+            var observer = new MutationObserver(function() {
+                hideCardIfInlineContent(cmitem);
+            });
+            observer.observe(cmitem, {childList: true});
+        });
+    };
+
+    /**
+     * Hide the activity card inside a cmitem if it contains injected inline content.
+     *
+     * @param {HTMLElement} cmitem The [data-for="cmitem"] wrapper element.
+     */
+    const hideCardIfInlineContent = function(cmitem) {
+        var card = cmitem.querySelector('.simple-cm-card');
+        if (!card) {
+            return;
+        }
+
+        // Check for children that are NOT the card and NOT the edit controls.
+        var children = cmitem.children;
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            if (child === card || child.classList.contains('simple-cm-edit')) {
+                continue;
+            }
+            // Found injected content — hide the card.
+            card.style.display = 'none';
+            return;
+        }
     };
 
     /**

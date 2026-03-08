@@ -246,14 +246,17 @@ class section extends section_base {
             $cmdata->availabilitytext = strip_tags($cmdata->availabilityinfo);
         }
 
+        // Inline content detection — runs for all zones so section 0's flat
+        // list can hide the card when a module provides rendered content.
+        $cmdata->inlinecontent = $this->get_inline_content($cm);
+        $cmdata->hasinlinecontent = !empty($cmdata->inlinecontent);
+
         // Zone-specific data.
         if ($zone === 'resources') {
             $cmdata->faicon = \format_simple::get_resource_icon($cm);
         }
 
         if ($zone === 'learning') {
-            $cmdata->inlinecontent = $this->get_inline_content($cm);
-            $cmdata->hasinlinecontent = !empty($cmdata->inlinecontent);
             $cmdata->embedurl = $this->get_embed_url($cm);
             $cmdata->hasembedurl = !empty($cmdata->embedurl);
             $cmdata->isembedh5p = ($cm->modname === 'h5pactivity' && $cmdata->hasembedurl);
