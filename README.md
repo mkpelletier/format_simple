@@ -1,22 +1,46 @@
-# Simple format (format_simple)
+# Simple format
 
-A clean, minimalist course format for Moodle 5.0+ that presents content one unit at a time with smooth transitions and a focused learning experience.
+A modern, minimalist course format for Moodle 5.0+ that presents one unit at a time with smooth transitions and a distraction-free learning experience. Inspired by clean, content-first design principles, Simple format strips away visual clutter so students can focus on what matters.
 
 ## Features
 
-- **Single-section display** with crossfade transitions between units
+### Content display
+- **Single-section display** with smooth crossfade transitions between units — no page reloads
 - **Three-zone layout** automatically categorises activities into Learning Content, Related Resources, and Related Activities
-- **Inline content rendering** for pages, books, H5P, SCORM, and video URLs (YouTube/Vimeo)
-- **Learning outcomes** configurable per section, displayed in a popout panel
-- **Custom navigation panel** with completion progress indicators (replaces Moodle's course index)
-- **Cog navigation** replaces the secondary nav with a tile-grid popover available on all course pages
-- **Persistent home button** for navigating back to the course from activity pages
-- **Course Info overlay** (optional) displays section 0 in a modal accessible from every page
-- **Course banner** (optional) hero image with course name on section 0
+- **Inline content rendering** — the primary learning item in each section (Page, Book, H5P, SCORM, YouTube/Vimeo) is embedded directly on the course page with a fullscreen toggle
+- **Learning outcomes** configurable per section, displayed in a collapsible popout panel
+
+### Navigation
+- **Custom navigation panel** with SVG-based completion progress indicators — checkmarks, progress rings, and padlock icons for restricted sections (replaces Moodle's built-in course index)
+- **Cog navigation** — a compact tile-grid popover replacing the secondary navigation bar, providing quick access to Participants, Grades, Settings, and 40+ other course tools with Font Awesome icons
+- **Persistent home button** for navigating back to the course from any activity page
+- **Unread forum badge** — displays a count of unread forum posts on the section 0 navigation button
+
+### Course info
+- **Course banner** (optional) — hero image with course name on section 0
+- **Course Info overlay** (optional) — displays section 0 content in a floating modal accessible from every page in the course, preserving interactive widget state
+
+### Responsive design
+- **Desktop**: side-by-side navigation and content layout
+- **Tablet and mobile**: stacked layout with animated hamburger drawer navigation
+- **Keyboard and screen reader accessible** — full ARIA support, keyboard navigation, and focus management throughout
+
+## How it works
+
+Activities are automatically sorted into zones based on their module type:
+
+| Zone | Module types |
+|------|-------------|
+| **Learning Content** | Page, H5P, SCORM, LTI, Lesson, Label, video URLs, and any module providing inline content via `cm_info` |
+| **Related Resources** | URL, File, Book, Folder — with mimetype icons for PDFs, Word, Excel, PowerPoint, images, video, audio, and archives |
+| **Related Activities** | Assignment, Quiz, Forum, and all other activity types |
+
+The first learning content item in each section is rendered inline (embedded) rather than as a link. Completion tracking badges appear on every activity card, supporting both automatic and manual completion.
 
 ## Requirements
 
 - Moodle 5.0 or later
+- Modern browser with CSS Grid and ES6 support
 
 ## Installation
 
@@ -38,17 +62,7 @@ Section-level settings (under **Edit section**):
 
 | Setting | Description |
 |---------|-------------|
-| Learning outcomes | One outcome per line, displayed in a popout panel |
-
-## How it works
-
-Activities are automatically sorted into zones based on their module type:
-
-- **Learning Content**: page, H5P, SCORM, LTI, lesson, label, video URLs
-- **Related Resources**: URL, resource (file), book, folder
-- **Related Activities**: assignment, quiz, forum, and all other activity types
-
-The first learning content item in each section is displayed inline (embedded) rather than as a link.
+| Learning outcomes | One outcome per line, displayed in a collapsible popout panel |
 
 ## Testing
 
@@ -63,6 +77,10 @@ php vendor/bin/phpunit --testsuite format_simple_testsuite
 ```bash
 php admin/tool/behat/cli/run.php --tags=@format_simple
 ```
+
+## Privacy
+
+This plugin does not store any personal data.
 
 ## License
 
