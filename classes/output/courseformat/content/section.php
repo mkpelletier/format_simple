@@ -261,11 +261,12 @@ class section extends section_base {
             $cmdata->hasembedurl = !empty($cmdata->embedurl);
             $cmdata->isembedh5p = ($cm->modname === 'h5pactivity' && $cmdata->hasembedurl);
             $cmdata->isembedscorm = ($cm->modname === 'scorm' && $cmdata->hasembedurl);
+            $cmdata->isembedlti = ($cm->modname === 'lti' && $cmdata->hasembedurl);
 
             // View completion tracking for inline/embedded content.
             // These modules are displayed without visiting view.php, so JS
             // will fetch the view URL in the background to trigger completion.
-            $viewmods = ['page', 'book', 'h5pactivity', 'scorm', 'url'];
+            $viewmods = ['page', 'book', 'h5pactivity', 'scorm', 'url', 'lti'];
             if (($cmdata->hasinlinecontent || $cmdata->hasembedurl) && in_array($cm->modname, $viewmods, true)) {
                 $cmdata->viewurl = $cm->url ? $cm->url->out(false) : '';
                 $cmdata->hasviewtracking = !empty($cmdata->viewurl);
@@ -418,6 +419,11 @@ class section extends section_base {
             return $this->get_scorm_embed_url($cm);
         }
 
+        // LTI activity — embed via the Moodle LTI launch page.
+        if ($cm->modname === 'lti') {
+            return $this->get_lti_embed_url($cm);
+        }
+
         // URL module — check for YouTube/Vimeo video embeds.
         if ($cm->modname !== 'url') {
             return '';
@@ -503,6 +509,20 @@ class section extends section_base {
             'display' => 'popup',
         ]);
         return $embedurl->out(false);
+    }
+
+    /**
+     * Get the embed URL for an LTI activity via the Moodle LTI launch page.
+     *
+     * @param \cm_info $cm The course module info.
+     * @return string Embed URL or empty string.
+     */
+    private function get_lti_embed_url(\cm_info $cm): string {
+        $launchurl = new \moodle_url('/mod/lti/launch.php', [
+            'id' => $cm->id,
+            'triggerview' => 0,
+        ]);
+        return $launchurl->out(false);
     }
 
     /**

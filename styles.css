@@ -1113,6 +1113,15 @@
     position: relative;
 }
 
+.format-simple .simple-embed-container.simple-embed-lti {
+    padding-bottom: 0;
+    height: 700px;
+}
+
+.format-simple .simple-embed-container.simple-embed-lti .simple-embed-iframe {
+    position: relative;
+}
+
 /* ---- Embed Fullscreen Button ---- */
 .format-simple .simple-embed-fullscreen-btn {
     position: absolute;
