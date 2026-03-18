@@ -11,6 +11,7 @@ All notable changes to the Simple course format plugin are documented in this fi
 ### Fixed
 - Question bank (`qbank`) modules no longer appear as cards in course sections.
 - Graded LTI, H5P, and SCORM activities remain in the learning zone regardless of grade configuration.
+- Activity and resource edit dropdown menus no longer render beneath adjacent cards (z-index fix).
 
 ## v0.6.0 (2026-03-10) - Beta
 

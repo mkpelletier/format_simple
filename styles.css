@@ -1104,6 +1104,10 @@
 }
 
 /* SCORM embed — variable content height like H5P. */
+#page-mod-scorm-player > ai-chat-bubble {
+    display: none !important;
+}
+
 .format-simple .simple-embed-container.simple-embed-scorm {
     padding-bottom: 0;
     height: 700px;
@@ -1123,6 +1127,10 @@
 }
 
 /* ---- Embed Fullscreen Button ---- */
+.format-simple.editing .simple-embed-fullscreen-btn {
+    display: none;
+}
+
 .format-simple .simple-embed-fullscreen-btn {
     position: absolute;
     top: 12px;
@@ -1616,6 +1624,15 @@
 .format-simple .simple-inline-content,
 .format-simple [data-for="cmitem"] {
     overflow: visible;
+}
+
+/* When a dropdown is open, lift the entire row above neighbouring cards
+   so the menu is not obscured by adjacent card stacking contexts. */
+.format-simple .simple-cm-wrapper:has(.dropdown-menu.show),
+.format-simple .simple-cm-learning:has(.dropdown-menu.show),
+.format-simple [data-for="cmitem"]:has(.dropdown-menu.show) {
+    z-index: 1060;
+    position: relative;
 }
 
 /* ---- Add Activity Button ---- */
