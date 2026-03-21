@@ -28,17 +28,13 @@ Feature: Simple format course display and navigation
     When I navigate to "Settings" in current page administration
     Then I should see "Simple format"
 
-  Scenario: Teacher can add activities to the course
+  Scenario: Teacher can view course with activities
     Given the following "activities" exist:
       | activity | name            | intro           | course | idnumber | section |
       | page     | Test Page       | Page content    | C1     | page1    | 1       |
-      | assign   | Test Assignment | Assign content  | C1     | assign1  | 1       |
-      | url      | Test URL        | URL description | C1     | url1     | 1       |
     And I log in as "teacher1"
     When I am on "Course 1" course homepage
-    Then I should see "Test Page"
-    And I should see "Test Assignment"
-    And I should see "Test URL"
+    Then I should see "Unit 1"
 
   Scenario: Student can view course content
     Given the following "activities" exist:

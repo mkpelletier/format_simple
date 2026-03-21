@@ -312,8 +312,10 @@ define(['core/ajax', 'core/str', 'core/templates'], function(Ajax, Str, Template
      * @param {number} courseId The course ID.
      */
     var openSection0Modal = function(courseId) {
+        var body;
+
         createModalDom().then(function() {
-            var body = modalPanel.querySelector('.simple-s0-modal-body');
+            body = modalPanel.querySelector('.simple-s0-modal-body');
 
             // If we already populated the body, just re-show.
             if (body.dataset.populated) {
@@ -338,31 +340,35 @@ define(['core/ajax', 'core/str', 'core/templates'], function(Ajax, Str, Template
             // Fetch via AJAX on non-course-view pages.
             return Templates.render('format_simple/local/modal_loading', {
                 loadingtext: langStrings.loading
-            }).then(function(html) {
-                body.innerHTML = html;
-                showModal();
-
-                return Ajax.call([{
-                    methodname: 'format_simple_get_section0_content',
-                    args: {courseid: courseId}
-                }])[0];
-            }).then(function(response) {
-                body.innerHTML = response.html;
-                body.dataset.populated = '1';
-                hideInlineContentCards(body);
-                return undefined;
-            }).catch(function() {
-                return Templates.render('format_simple/local/modal_error', {
-                    message: langStrings.failedtoload
-                });
-            }).then(function(html) {
-                if (html) {
-                    body.innerHTML = html;
-                }
-                return undefined;
             });
+        }).then(function(html) {
+            if (!html) {
+                return undefined;
+            }
+            body.innerHTML = html;
+            showModal();
+
+            return Ajax.call([{
+                methodname: 'format_simple_get_section0_content',
+                args: {courseid: courseId}
+            }])[0];
+        }).then(function(response) {
+            if (!response) {
+                return undefined;
+            }
+            body.innerHTML = response.html;
+            body.dataset.populated = '1';
+            hideInlineContentCards(body);
+            return undefined;
         }).catch(function() {
-            // Modal DOM creation failed.
+            return Templates.render('format_simple/local/modal_error', {
+                message: langStrings.failedtoload
+            });
+        }).then(function(html) {
+            if (html) {
+                body.innerHTML = html;
+            }
+            return undefined;
         });
     };
 

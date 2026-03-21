@@ -576,20 +576,22 @@ body.format-simple .drawer.drawer-right {
 
 .format-simple .simple-nav-item.is-active::before {
     bottom: 100%;
-    background: radial-gradient(
-        circle at 0% 0%,
-        var(--simple-surface) calc(var(--simple-radius-lg) - 0.5px),
-        var(--simple-bg) var(--simple-radius-lg)
-    );
+    background:
+        radial-gradient(
+            circle at 0% 0%,
+            var(--simple-surface) calc(var(--simple-radius-lg) - 0.5px),
+            var(--simple-bg) var(--simple-radius-lg)
+        );
 }
 
 .format-simple .simple-nav-item.is-active::after {
     top: 100%;
-    background: radial-gradient(
-        circle at 0% 100%,
-        var(--simple-surface) calc(var(--simple-radius-lg) - 0.5px),
-        var(--simple-bg) var(--simple-radius-lg)
-    );
+    background:
+        radial-gradient(
+            circle at 0% 100%,
+            var(--simple-surface) calc(var(--simple-radius-lg) - 0.5px),
+            var(--simple-bg) var(--simple-radius-lg)
+        );
 }
 
 /* Legacy callout element — hidden, superseded by pseudo-element curves. */
